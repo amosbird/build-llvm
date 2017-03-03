@@ -3,15 +3,15 @@
 set -e -u
 set -o pipefail
 
-PREFIX=${PREFIX:-"/opt/llvm/"}
-JOBS=${JOBS:-8}
+PREFIX=$HOME
+JOBS=$(nproc)
 CWD=$(pwd)
 
 # lldb has been frequently not compiling, so I've given up enabling it by default
 # https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt
 ENABLE_LLDB=false
 USE_LATEST=false
-LLVM_RELEASE=3.8.0
+LLVM_RELEASE=3.9.1
 
 function abort { >&2 echo -e "\033[1m\033[31m$1\033[0m"; exit 1; }
 
