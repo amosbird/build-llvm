@@ -16,35 +16,14 @@ LLVM_RELEASE=3.9.1
 function abort { >&2 echo -e "\033[1m\033[31m$1\033[0m"; exit 1; }
 
 function build_llvm() {
-    # TODO - get this working or embed custom libc++
-    #CLIB=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/6.0/include:/usr/include
-    #CPPLIB=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/
     cd $CWD
     source_files=${CWD}/$1
-    #rm -rf ./build
     mkdir -p ./build
     cd ./build
-    # does not have cstdint
-    #-DC_INCLUDE_DIRS=:/usr/include/c++/4.2.1/ \
-    # fail
-    # -DC_INCLUDE_DIRS=:../../../../../Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/ \
-    # -DDEFAULT_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk \
-    # NOTE: the C_INCLUDE_DIRS are appended to the DEFAULT_SYSROOT
-    # the DEFAULT_SYSROOT should be:
-    # Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk
-    # but then it is hard to append and have found the C includes in /usr/include
-    # and the C++ includes in /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/
-    # so we fake the sysroot to be / to make it easy to append those specific paths
     cmake $source_files -G Ninja -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-     -DCLANG_DEFAULT_CXX_STDLIB=libc++ \
-     -DC_INCLUDE_DIRS=:/usr/include:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/ \
      -DDEFAULT_SYSROOT=/ \
      -DCMAKE_BUILD_TYPE=Release \
      -DLLVM_ENABLE_ASSERTIONS=Off \
-     -DCLANG_VENDOR=mapbox/springmeyer \
-     -DCLANG_REPOSITORY_STRING=https://github.com/springmeyer/build-llvm \
-     -DCLANG_APPEND_VC_REV=$(git -C ../llvm/tools/clang/ rev-list --max-count=1 HEAD) \
-     -DCLANG_VENDOR_UTI=org.mapbox.clang \
      -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
      -DCMAKE_CXX_FLAGS_RELEASE="${CXXFLAGS}" \
      -DLLVM_OPTIMIZED_TABLEGEN=ON
@@ -112,6 +91,7 @@ function setup_release() {
     fi
     mv openmp-${LLVM_RELEASE}.src llvm-${LLVM_RELEASE}.src/projects/openmp
     mv clang-tools-extra-${LLVM_RELEASE}.src llvm-${LLVM_RELEASE}.src/tools/clang/tools/extra
+    git clone --depth 1 https://github.com/include-what-you-use/include-what-you-use.git llvm-${LLVM_RELEASE}.src/tools/clang/tools/
     cd ../
 
 }
