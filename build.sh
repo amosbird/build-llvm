@@ -91,7 +91,7 @@ function setup_release() {
     fi
     mv openmp-${LLVM_RELEASE}.src llvm-${LLVM_RELEASE}.src/projects/openmp
     mv clang-tools-extra-${LLVM_RELEASE}.src llvm-${LLVM_RELEASE}.src/tools/clang/tools/extra
-    git clone --depth 1 https://github.com/include-what-you-use/include-what-you-use.git llvm-${LLVM_RELEASE}.src/tools/clang/tools/
+    git clone --depth 1 https://github.com/include-what-you-use/include-what-you-use.git llvm-${LLVM_RELEASE}.src/tools/clang/tools/include-what-you-use
     cd ../
 
 }
