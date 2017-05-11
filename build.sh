@@ -11,7 +11,7 @@ CWD=$(pwd)
 # https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt
 ENABLE_LLDB=false
 USE_LATEST=false
-LLVM_RELEASE=3.9.1
+LLVM_RELEASE=4.0.0
 
 function abort { >&2 echo -e "\033[1m\033[31m$1\033[0m"; exit 1; }
 
@@ -29,8 +29,6 @@ function build_llvm() {
      -DLLVM_OPTIMIZED_TABLEGEN=ON
     ninja -j${JOBS} -k5
     ninja install -k5
-    # manual install of tools that don't get installed right
-    cp build/Release/bin/include-what-you-use ${PREFIX}/bin
 }
 
 function setup() {
@@ -43,7 +41,6 @@ function setup() {
         fi
         cd clang/tools
         git clone --depth 1 http://llvm.org/git/clang-tools-extra.git extra
-        git clone --depth 1 https://github.com/include-what-you-use/include-what-you-use.git
         cd ../../../
         cd ./projects
         git clone --depth 1 http://llvm.org/git/compiler-rt.git
@@ -60,7 +57,6 @@ function update() {
     fi
     (echo "**** updating clang" && cd tools/clang && ${GIT_PULL})
     (echo "**** updating clang-tools-extra" && cd tools/clang/tools/extra && ${GIT_PULL})
-    (echo "**** updating include-what-you-use" && cd tools/clang/tools/include-what-you-use && ${GIT_PULL})
     (echo "**** updating compiler-rt" && cd projects/compiler-rt && ${GIT_PULL})
 }
 
@@ -91,7 +87,6 @@ function setup_release() {
     fi
     mv openmp-${LLVM_RELEASE}.src llvm-${LLVM_RELEASE}.src/projects/openmp
     mv clang-tools-extra-${LLVM_RELEASE}.src llvm-${LLVM_RELEASE}.src/tools/clang/tools/extra
-    git clone --depth 1 https://github.com/include-what-you-use/include-what-you-use.git llvm-${LLVM_RELEASE}.src/tools/clang/tools/include-what-you-use
     cd ../
 
 }
